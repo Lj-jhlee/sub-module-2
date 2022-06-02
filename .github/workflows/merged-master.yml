@@ -1,0 +1,29 @@
+name: "merged-master"
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  if_merged:
+    name: If Merged, Do ssh
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Send slack when failed
+        if: ${{ failure() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          slack_incoming_url: ${{ secrets.SLACK_INCOMING_URL }}
+
+      - name: Send slack if completed
+        if: ${{ success() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          status: success
+          slack_incoming_url: ${{ secrets.SLACK_INCOMING_URL }}

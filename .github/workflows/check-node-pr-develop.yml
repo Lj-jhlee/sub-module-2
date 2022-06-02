@@ -1,0 +1,37 @@
+name: "check-node-pr-develop"
+
+on:
+  pull_request:
+    branches:
+      - "develop"
+
+jobs:
+  run-linters:
+    name: Check node
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: "yarn"
+
+      - name: Check Node v
+        run: node -v
+
+      - name: Send slack when failed
+        if: ${{ failure() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          slack_incoming_url: ${{ secrets.SLACK_INCOMING_URL }}
+
+      - name: Send slack if completed
+        if: ${{ success() }}
+        uses: ./.github/actions/slack-notify
+        with:
+          status: success
+          slack_incoming_url: ${{ secrets.SLACK_INCOMING_URL }}
