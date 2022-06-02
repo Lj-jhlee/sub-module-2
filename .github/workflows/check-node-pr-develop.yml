@@ -1,4 +1,4 @@
-name: "check-node-pr-develop"
+name: ci
 
 on:
   pull_request:
